@@ -10,13 +10,14 @@ import azure.functions as func
 
 def main(keyvaluepairs: func.InputStream) -> func.InputStream:
 
-    word_counts = []
+    reduced_data = {}
+    for word, count in keyvaluepairs:
+        if word in reduced_data:
+            reduced_data[word] += count
+        else:
+            reduced_data[word] = count
 
-    for word, counts in keyvaluepairs.items():
-        total_count = sum(counts)
-        word_count_dict = {"Word": word, "Count": total_count}
-        word_counts.append(word_count_dict)
-    return word_counts
+    return reduced_data
 
 
 

@@ -27,29 +27,15 @@ def orchestrator_function(context: df.DurableOrchestrationContext):
         map_tasks.append(context.call_activity('Map', data))
     
     map_results = yield context.task_all(map_tasks)
-
-    shuffler_tasks = []
-    for result in map_results:
-        shuffler_tasks.append(context.call_activity('Shuffler', result))
-
-    shuffled_data = yield context.task_all(shuffler_tasks)
+   
+    shuffled_data = yield context.call_activity('Shuffler',map_results)
 
     reducer_tasks = []
-    for data in shuffled_data:
+    for data in shuffled_data.values():
         reducer_tasks.append(context.call_activity('Reducer', data))
 
     reduced_data = yield context.task_all(reducer_tasks)
-    print(reduced_data)
-    final_result = {}
-    for word_list in reduced_data:
-        for word_dict in word_list:
-            word = word_dict['Word']
-            count = word_dict['Count']
-            if word in final_result:
-                final_result[word] += count
-            else:
-                final_result[word] = count
-    print(final_result)
-    return final_result
+    return reduced_data
+
 
 main = df.Orchestrator.create(orchestrator_function)

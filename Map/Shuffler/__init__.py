@@ -10,12 +10,18 @@ import logging
 
 
 def main(mapoutputs: list) -> dict:
-
     shuffled_data = {}
-    for pair in mapoutputs:
-        key, value = pair
-        if key not in shuffled_data:
-            shuffled_data[key] = []
-        shuffled_data[key].append(value)
-    
+    for sentence in mapoutputs:
+        for words in sentence:
+            if len(words) == 2:
+                word, count = words
+                if word not in shuffled_data:
+                    shuffled_data[word] = []
+                shuffled_data[word].append((word, count))
+            else: 
+                for word, count in words:
+                    if word not in shuffled_data:
+                        shuffled_data[word] = []
+                    shuffled_data[word].append((word, count))
+
     return shuffled_data
